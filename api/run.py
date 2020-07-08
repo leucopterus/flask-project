@@ -6,8 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 app.config['SECRET_KEY'] = 'askdoqo3wiE)(#dOHqwd#qwnpf870JFU092if'
 db = SQLAlchemy(app)
 
@@ -56,10 +55,10 @@ def register():
         return redirect(url_for('user'))
     if request.method == 'POST':
         user_data = json.loads(request.get_data())
-        user = user_data.get('username')
+        username = user_data.get('username')
         password = user_data.get('password')
         email = user_data.get('email')
-        usr = User(user, password, email)
+        usr = User(username, password, email)
         db.session.add(usr)
         db.session.commit()
         return redirect(url_for('login'))
@@ -92,5 +91,5 @@ def logout():
 
 
 if __name__ == '__main__':
-    db.create_all()
     app.run(debug=True)
+    db.create_all()
