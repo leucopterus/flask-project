@@ -1,6 +1,5 @@
 import json
 
-import sqlalchemy
 from flask import Flask, redirect, url_for, request, session
 from flask_sqlalchemy import SQLAlchemy
 
@@ -10,23 +9,23 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 app.config['SECRET_KEY'] = 'askdoqo3wiE)(#dOHqwd#qwnpf870JFU092if'
 db = SQLAlchemy(app)
 
-usr_in_db = (
-    {'admin': '1234567'},
-    {'test': 'tester'},
-)
-
 
 class User(db.Model):
-    _id = db.Column('id', db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), nullable=False)
 
-    def __init__(self, name, password, email, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, name, password, email, **kwargs):
+        super().__init__(**kwargs)
         self.name = name
         self.password = password
         self.email = email
+
+
+@app.shell_context_processor
+def make_shell_context():
+    return {'db': db, 'User': User}
 
 
 @app.route('/')
@@ -91,5 +90,5 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
     db.create_all()
+    app.run(debug=True)
