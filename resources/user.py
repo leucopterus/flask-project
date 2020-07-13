@@ -1,25 +1,21 @@
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, request
+from marshmallow import ValidationError
 
 from models.user import UserModel
+from schemas.user import UserSchema
+
+user_schema = UserSchema()
 
 
-class UserRegister(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument(
-        'username',
-        type=str,
-        required=True,
-        help='This field cannot be left blank!'
-    )
-    parser.add_argument(
-        'password',
-        type=str,
-        required=True,
-        help='This field cannot be left blank!'
-    )
+class UserRegisterResource(Resource):
 
     def post(self):
-        data = self.parser.parse_args()
+        json_data = request.get_json()
+
+        try:
+            data = user_schema.load(json_data)
+        except ValidationError as err:
+            return err.messages, 400
 
         if UserModel.find_by_username(data.get('username')):
             return {'message': 'User this such username is already exists'}, 400
