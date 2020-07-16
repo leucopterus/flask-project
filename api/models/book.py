@@ -1,6 +1,6 @@
 from app import db
-from api.models.user import User
-from api.models.publisher import Publisher
+from api.models.user import UserModel
+from api.models.publisher import PublisherModel
 
 
 authors = db.Table(
@@ -10,14 +10,14 @@ authors = db.Table(
 )
 
 
-class Book(db.Model):
+class BookModel(db.Model):
     __tablename__ = 'book'
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(127), unique=True, index=True)
-    authors = db.relationship(User, secondary=authors, lazy='subquery',
+    authors = db.relationship(UserModel, secondary=authors, lazy='subquery',
                               backref=db.backref('books', lazy=True))
-    publisher = db.relationship(Publisher, lazy='select',
+    publisher = db.relationship(PublisherModel, lazy='select',
                                 backref=db.backref('book', lazy='joined'))
 
     def __str__(self):
